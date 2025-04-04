@@ -32,3 +32,96 @@ void toLowerCase(char *str)
         if (str[i] >= 'A' && str[i] <= 'Z')
             str[i] = str[i] - 'A' + 'a';
 }
+
+int strToInt(char *str)
+{
+    int length = len(str), ans = 0;
+
+    for (int i = 0; i < length; i++)
+        ans = (ans * 10) + (str[i] - '0');
+
+    return ans;
+}
+
+bool checkValidInt(char *str)
+{
+    for (int i = 0; str[i] != '\0'; i++)
+        if (!(str[i] >= '0' && str[i] <= '9'))
+            return false;
+
+    return true;
+}
+
+bool isLeapYear(int year)
+{
+    return (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
+}
+
+bool isValidDate(char *date)
+{
+    if (len(date) != 10 || date[4] != '-' || date[7] != '-')
+        return false;
+
+    char yearStr[5], monthStr[3], dayStr[3];
+    for (int i = 0; i < 4; i++)
+        yearStr[i] = date[i];
+    yearStr[4] = '\0';
+    for (int i = 0; i < 2; i++)
+        monthStr[i] = date[i + 5];
+    monthStr[3] = '\0';
+    for (int i = 0; i < 2; i++)
+        dayStr[i] = date[i + 8];
+    dayStr[2] = '\0';
+
+    if (!checkValidInt(yearStr) || !checkValidInt(monthStr) || !checkValidInt(dayStr))
+        return false;
+
+    int year = strToInt(yearStr), month = strToInt(monthStr), day = strToInt(dayStr);
+
+    if (month < 1 || month > 12)
+        return false;
+
+    int daysInMonth[] = {31, 28 + isLeapYear(year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if (day < 1 || day > daysInMonth[month - 1])
+        return false;
+
+    return true;
+}
+
+bool isValidTime(char *time)
+{
+    if (len(time) != 5 || time[2] != ':')
+        return false;
+
+    char hourStr[3], minuteStr[3];
+    for (int i = 0; i < 2; i++)
+        hourStr[i] = time[i];
+    hourStr[2] = '\0';
+    for (int i = 0; i < 2; i++)
+        minuteStr[i] = time[i + 3];
+    minuteStr[2] = '\0';
+
+    if (!checkValidInt(hourStr) || !checkValidInt(minuteStr))
+        return false;
+
+    int hour = strToInt(hourStr);
+    int minute = strToInt(minuteStr);
+
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
+        return false;
+
+    return true;
+}
+
+void copyStr(char *str1, char *str2)
+{
+    for (int i = 0; str2[i] != '\0'; i++)
+        str1[i] = str2[i];
+}
+
+void trimNewline(char *str)
+{
+    size_t length = len(str);
+    if (length > 0 && str[length - 1] == '\n')
+        str[length - 1] = '\0';
+}
