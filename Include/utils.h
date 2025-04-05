@@ -11,5 +11,8 @@ bool isValidTime(char *time);         // Check if the given string is valid time
 bool isLeapYear(int year);            // Check for a leap year
 void copyStr(char *str1, char *str2); // Copy string 2 to string 1
 void trimNewline(char *str);          // Remove new line character if present
+bool checkValidUsername(char *str);   // Check valid username
+int generateRandomId(int size);       // Generate a random ID
+char **splitCSVLine(char *line);      // Split the line by seeing (word as python function split(','))
 
 #endif

@@ -117,6 +117,8 @@ void copyStr(char *str1, char *str2)
 {
     for (int i = 0; str2[i] != '\0'; i++)
         str1[i] = str2[i];
+
+    str1[len(str2)] = '\0';
 }
 
 void trimNewline(char *str)
@@ -124,4 +126,58 @@ void trimNewline(char *str)
     size_t length = len(str);
     if (length > 0 && str[length - 1] == '\n')
         str[length - 1] = '\0';
+}
+
+bool checkValidUsername(char *str)
+{
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        if (str[i] >= 'a' && str[i] <= 'z')
+            continue;
+        else if (str[i] >= 'A' && str[i] <= 'Z')
+            continue;
+        else if (str[i] >= '0' && str[i] <= '9')
+            continue;
+        else if (str[i] == '_' || str[i] == '@' || str[i] == '#')
+            continue;
+        else
+            return false;
+    }
+
+    return true;
+}
+
+int generateRandomId(int size)
+{
+    int lower = (int)pow(10, size - 1);
+    int upper = (int)pow(10, size) - 1;
+
+    return (rand() % (upper - lower + 1)) + lower;
+}
+
+char **splitCSVLine(char *line)
+{
+    char **arr = (char **)malloc(3 * sizeof(char *));
+    int idx = 0, i = 0;
+
+    while (line[i] != '\n' && line[i] != '\0')
+    {
+        int start = i, k = 0;
+        while (line[i] != ',' && line[i] != '\n' && line[i] != '\0')
+            i++;
+
+        int length = i - start;
+
+        arr[idx] = (char *)malloc((length + 1) * sizeof(char));
+        for (int j = start; j < i; j++)
+            arr[idx][k++] = line[j];
+
+        arr[idx][k] = '\0';
+        idx++;
+
+        if (line[i] == ',')
+            i++;
+    }
+
+    return arr;
 }

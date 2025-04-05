@@ -3,6 +3,7 @@
 
 void main()
 {
+    srand(time(NULL));
     mainMenu();
 }
 
@@ -19,9 +20,19 @@ void mainMenu()
         int choice;
         Admin adminData;
         User userData;
+        Response res;
 
         printf("Choose Option: ");
-        scanf("%d", &choice);
+        if (scanf("%d", &choice) != 1)
+        {
+            printf("Invalid input. Please enter a number.\n");
+            while (getchar() != '\n')
+                ; // Clear input buffer
+            continue;
+        }
+
+        while (getchar() != '\n')
+            ;
 
         switch (choice)
         {
@@ -36,6 +47,43 @@ void mainMenu()
                 adminMenu();
             else
                 printf("Failed to logged in as admin check details, and then continue\n");
+            break;
+
+        case 2:
+            printf("Enter username (only a-z, A-Z, 1-9, _, @, # allowed): ");
+            fgets(userData.username, sizeof(userData.username), stdin);
+            trimNewline(userData.username);
+
+            while (!checkValidUsername(userData.username))
+            {
+                printf("Please enter a valid username: ");
+                fgets(userData.username, sizeof(userData.username), stdin);
+                trimNewline(userData.username);
+            }
+
+            while (isUsernameTaken(userData.username))
+            {
+                printf("Username already taken, please try another: ");
+                fgets(userData.username, sizeof(userData.username), stdin);
+                trimNewline(userData.username);
+            }
+
+            printf("Enter the password: ");
+            fgets(userData.password, sizeof(userData.password), stdin);
+            trimNewline(userData.password);
+
+            userData.userId = generateRandomId(USER_ID_SIZE);
+
+            res = registerUser(&userData);
+            if (res.success)
+            {
+                printf("<--------- %s ---------->\n", res.message);
+                // userMenu(res.user);
+            }
+            else
+            {
+                printf("<---------- %s ---------->\n", res.message);
+            }
             break;
 
         case 4:
