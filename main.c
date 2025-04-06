@@ -86,6 +86,35 @@ void mainMenu()
             }
             break;
 
+        case 3:
+            printf("Enter username (only a-z, A-Z, 1-9, _, @, # allowed): ");
+            fgets(userData.username, sizeof(userData.username), stdin);
+            trimNewline(userData.username);
+
+            while (!checkValidUsername(userData.username))
+            {
+                printf("Please enter a valid username: ");
+                fgets(userData.username, sizeof(userData.username), stdin);
+                trimNewline(userData.username);
+            }
+
+            printf("Enter the password: ");
+            fgets(userData.password, sizeof(userData.password), stdin);
+            trimNewline(userData.password);
+
+            res = loginUser(&userData);
+
+            if (res.success)
+            {
+                printf("<--------- %s ---------->\n", res.message);
+                // userMenu(res.user);
+            }
+            else
+            {
+                printf("<---------- %s ---------->\n", res.message);
+            }
+            break;
+
         case 4:
             printf("Quiting...\n");
             return;

@@ -28,7 +28,7 @@ typedef struct{
 
 bool loginAdmin(Admin admin);
 Response registerUser(User *user);
-Response loginUser(User user);
+Response loginUser(User *user);
 bool isUsernameTaken(char* username);
 
 #endif
