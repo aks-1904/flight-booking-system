@@ -2,6 +2,7 @@
 #define FLIGHT_H
 
 #define FLIGHT_FILE "./data/flights.csv"
+#define FLIGHT_DATA_LENGTH 7
 
 typedef struct{
     int flight_number;

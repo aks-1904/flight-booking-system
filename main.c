@@ -1,5 +1,4 @@
 #include "./Include/main.h"
-#include "./Programs/flight.c"
 
 void main()
 {
@@ -78,7 +77,7 @@ void mainMenu()
             if (res.success)
             {
                 printf("<--------- %s ---------->\n", res.message);
-                // userMenu(res.user);
+                userMenu(res.user);
             }
             else
             {
@@ -107,7 +106,7 @@ void mainMenu()
             if (res.success)
             {
                 printf("<--------- %s ---------->\n", res.message);
-                // userMenu(res.user);
+                userMenu(res.user);
             }
             else
             {
@@ -131,7 +130,7 @@ void adminMenu()
     printf("<----------Logged in as admin (%s)---------->\n", ADMIN_USERNAME);
     while (true)
     {
-        printf("Choice amount following:-\n");
+        printf("Choice amoung following:-\n");
         printf("1. Add a flight\n");
         printf("2. Remove a flight\n");
         printf("3. Check a flight details\n");
@@ -242,6 +241,60 @@ void adminMenu()
 
         default:
             printf("Invalid Option. Please try again.\n");
+            break;
+        }
+    }
+}
+
+void userMenu(User loggedInUser)
+{
+    printf("<----------Logged in as user (%s)---------->\n", loggedInUser.username);
+
+    int choice;
+    Booking bookingData;
+    BookingResponse res;
+    while (true)
+    {
+        printf("Choice amoung following:-\n");
+        printf("1. Book a flight:-\n");
+        printf("2. Cancel a booking:-\n");
+        printf("3. Logout:-\n");
+
+        printf("Select an option:- ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+        case 1:
+            bookingData.bookingId = generateRandomId(9);
+            bookingData.userId = loggedInUser.userId;
+            printf("Enter flight id to book: ");
+            scanf("%d", &bookingData.flightId);
+
+            printf("Enter total seats you want to book: ");
+            scanf("%d", &bookingData.totalSeatsBooked);
+
+            res = bookFlight(bookingData);
+
+            if (res.success)
+            {
+                printf("<---------- %s ---------->\n", res.message);
+                printf("Following are the details of booking: \n");
+                printf("Booking Id:- %d\nUser Id- %d\nFlight Id:- %d\n Total Seats Booked:- %d\n", res.booking.bookingId, res.booking.userId, res.booking.flightId, res.booking.totalSeatsBooked);
+            }
+            else
+            {
+                printf("<---------- %s ---------->", res.message);
+            }
+            break;
+
+        case 3:
+            printf("Logging out...");
+            return;
+            break;
+
+        default:
+            printf("Invalid option\n");
             break;
         }
     }

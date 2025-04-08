@@ -57,10 +57,11 @@ Response loginUser(User *userData)
 
     while (fgets(line, sizeof(line), file) != NULL)
     {
-        char **data = splitCSVLine(line);
+        char **data = splitCSVLine(line, AUTH_DATA_LENGTH);
 
         if (isSame(data[1], userData->username) && isSame(data[2], userData->password))
         {
+            userData->userId = strToInt(data[0]);
             got = 1;
             break;
         }
@@ -101,7 +102,7 @@ bool isUsernameTaken(char *username)
 
     while (fgets(line, sizeof(line), file) != NULL)
     {
-        char **data = splitCSVLine(line);
+        char **data = splitCSVLine(line, AUTH_DATA_LENGTH);
         if (isSame(data[1], username))
         {
             for (int i = 0; i < 3; i++)

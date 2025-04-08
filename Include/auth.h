@@ -8,6 +8,7 @@
 #define MAX_LINE_LENGTH 256
 #define USERNAME_MAX_LENGTH 100
 #define USER_FILE "./data/users.csv"
+#define AUTH_DATA_LENGTH 3
 
 typedef struct{
     char username[50];

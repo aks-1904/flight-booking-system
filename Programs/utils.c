@@ -155,9 +155,9 @@ int generateRandomId(int size)
     return (rand() % (upper - lower + 1)) + lower;
 }
 
-char **splitCSVLine(char *line)
+char **splitCSVLine(char *line, int length)
 {
-    char **arr = (char **)malloc(3 * sizeof(char *));
+    char **arr = (char **)malloc(length * sizeof(char *));
     int idx = 0, i = 0;
 
     while (line[i] != '\n' && line[i] != '\0')
