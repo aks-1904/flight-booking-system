@@ -261,11 +261,71 @@ void userMenu(User loggedInUser)
         printf("3. Logout:-\n");
 
         printf("Select an option:- ");
-        scanf("%d", &choice);
+        if (scanf("%d", &choice) != 1)
+        {
+            printf("Invalid input. Please enter a number.\n");
+            while (getchar() != '\n')
+                ; // Clear input buffer
+            continue;
+        }
+
+        while (getchar() != '\n')
+            ; // Clear newline from buffer
 
         switch (choice)
         {
         case 1:
+            char destination[50];
+            int returnSize;
+            char filter = 0;
+            printf("Enter the destination to search for flight: ");
+            fgets(destination, 50, stdin);
+            trimNewline(destination);
+
+            Flight *flights = displayFlights(destination, &returnSize);
+
+            if (returnSize == 0)
+            {
+                printf("Soory, no flight available for this destination");
+                break;
+            }
+
+            printf("Following are the flight details: \n\n");
+            printFlights(flights, returnSize);
+
+            printf("Want to filter? (Type y to filter): ");
+            scanf("%c", &filter);
+
+            if (filter == 'y' || filter == 'Y')
+            {
+                int option;
+                printf("1. According to departure date and time\n2. According to price\n");
+                printf("Choose:- ");
+                while (option != 1 && option != 2)
+                {
+                    scanf("%d", &option);
+
+                    switch (option)
+                    {
+                    case 1:
+                        sortAccDeparture(flights, returnSize);
+                        printFlights(flights, returnSize);
+                        break;
+                    case 2:
+                        sortAccPrice(flights, returnSize);
+                        printFlights(flights, returnSize);
+                        break;
+
+                    default:
+                        printf("\n\n<--------- Invalid option -------->\n\n");
+                        break;
+                    }
+                }
+            }
+
+            free(flights);
+            flights = NULL;
+
             bookingData.bookingId = generateRandomId(9);
             bookingData.userId = loggedInUser.userId;
             printf("Enter flight id to book: ");

@@ -32,3 +32,54 @@ FlightResponse addFlight(Flight *flight)
 
     return res;
 }
+
+Flight *displayFlights(char *destination, int *returnSize)
+{
+    Flight *flights = NULL;
+    *returnSize = 0;
+
+    FILE *file = fopen(FLIGHT_FILE, "r");
+    if (!file)
+    {
+        return NULL;
+    }
+
+    char buffer[255];
+
+    while (fgets(buffer, sizeof(buffer), file) != NULL)
+    {
+        char **fields = splitCSVLine(buffer, FLIGHT_DATA_LENGTH);
+
+        if (isSame(fields[1], destination))
+        {
+            Flight *temp = realloc(flights, (*returnSize + 1) * sizeof(Flight));
+            if (!temp)
+            {
+                for (int i = 0; i < FLIGHT_DATA_LENGTH; i++)
+                    free(fields[i]);
+                free(fields);
+                fclose(file);
+                return flights;
+            }
+
+            flights = temp;
+
+            flights[*returnSize].flight_number = strToInt(fields[0]);
+            copyStr(flights[*returnSize].destination, fields[1]);
+            copyStr(flights[*returnSize].departure_date, fields[2]);
+            copyStr(flights[*returnSize].departure_time, fields[3]);
+            flights[*returnSize].ticket_price = strToInt(fields[4]);
+            flights[*returnSize].total_seats = strToInt(fields[5]);
+            flights[*returnSize].available_seats = strToInt(fields[6]);
+
+            (*returnSize)++;
+        }
+
+        for (int i = 0; i < FLIGHT_DATA_LENGTH; i++)
+            free(fields[i]);
+        free(fields);
+    }
+
+    fclose(file);
+    return flights;
+}

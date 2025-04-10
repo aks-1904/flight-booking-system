@@ -181,3 +181,50 @@ char **splitCSVLine(char *line, int length)
 
     return arr;
 }
+
+int compareFlights(const void *a, const void *b)
+{
+    Flight *f1 = (Flight *)a;
+    Flight *f2 = (Flight *)b;
+
+    int date_cmp = strcmp(f1->departure_date, f2->departure_date);
+    if (date_cmp == 0)
+    {
+        return strcmp(f1->departure_time, f2->departure_time);
+    }
+    return date_cmp;
+}
+
+void sortAccDeparture(Flight *flights, int count)
+{
+    qsort(flights, count, sizeof(Flight), compareFlights);
+}
+
+void printFlights(Flight *flights, int count)
+{
+    for (int i = 0; i < count; i++)
+    {
+        printf("<------------------------------>\n\n");
+        printf("Flight No: %d\n Destination: %s\n Date: %s\n Time: %s\n Price: %d\n Seats: %d\n",
+               flights[i].flight_number,
+               flights[i].destination,
+               flights[i].departure_date,
+               flights[i].departure_time,
+               flights[i].ticket_price,
+               flights[i].available_seats);
+        printf("\n\n<------------------------------>\n\n");
+    }
+}
+
+int compareByPrice(const void *a, const void *b)
+{
+    Flight *f1 = (Flight *)a;
+    Flight *f2 = (Flight *)b;
+
+    return f1->ticket_price - f2->ticket_price;
+}
+
+void sortAccPrice(Flight *flights, int count)
+{
+    qsort(flights, count, sizeof(Flight), compareByPrice);
+}
