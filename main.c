@@ -253,12 +253,15 @@ void userMenu(User loggedInUser)
     int choice;
     Booking bookingData;
     BookingResponse res;
+    int returnSize;
+
     while (true)
     {
         printf("Choice amoung following:-\n");
         printf("1. Book a flight:-\n");
-        printf("2. Cancel a booking:-\n");
-        printf("3. Logout:-\n");
+        printf("2. View all bookings:-\n");
+        printf("3. Cancel a bookings:-\n");
+        printf("4. Logout:-\n");
 
         printf("Select an option:- ");
         if (scanf("%d", &choice) != 1)
@@ -276,7 +279,6 @@ void userMenu(User loggedInUser)
         {
         case 1:
             char destination[50];
-            int returnSize;
             char filter = 0;
             printf("Enter the destination to search for flight: ");
             fgets(destination, 50, stdin);
@@ -346,6 +348,25 @@ void userMenu(User loggedInUser)
             {
                 printf("<---------- %s ---------->", res.message);
             }
+            break;
+
+        case 2:
+            AllBookingResponse *bookings = showAllBookings(loggedInUser.userId, &returnSize);
+
+            if (returnSize == 0)
+            {
+                printf("No boooking found\n\n");
+                break;
+            }
+            printf("Following are your bookings\n\n");
+            for (int i = 0; i < returnSize; i++)
+            {
+                printf("Booking %d: \n", i + 1);
+                printf("<------------------------------>\n");
+                printf("Booking Id:- %d\nDestination:- %s\nDeparture Date:- %s\nDeparture Time:- %s\n Total Seats Booked:- %d\n Total Fare:- %d\n", bookings[i].bookingId, bookings[i].destination, bookings[i].departure_date, bookings[i].departure_time, bookings[i].totalSeatsBooked, bookings[i].totalFare);
+                printf("<------------------------------>\n");
+            }
+
             break;
 
         case 3:

@@ -104,3 +104,80 @@ BookingResponse bookFlight(Booking bookingData)
 
     return res;
 }
+
+AllBookingResponse *showAllBookings(int userId, int *returnSize)
+{
+    AllBookingResponse *res = NULL;
+    *returnSize = 0;
+
+    FILE *file = fopen(BOOKINGS_FILE, "r");
+    FILE *flightFile = fopen(FLIGHT_FILE, "r");
+
+    if (!file || !flightFile)
+        return NULL;
+
+    char buffer[MAX_LINE_LENGTH];
+
+    while (fgets(buffer, sizeof(buffer), file) != NULL)
+    {
+        char **fields = splitCSVLine(buffer, BOOKING_DATA_LENGTH);
+
+        if (strToInt(fields[1]) == userId)
+        {
+            AllBookingResponse *tmp = realloc(res, (*returnSize + 1) * sizeof(AllBookingResponse));
+
+            if (!tmp)
+            {
+                for (int i = 0; i < BOOKING_DATA_LENGTH; i++)
+                    free(fields[i]);
+
+                free(fields);
+                fclose(file);
+                fclose(flightFile);
+
+                return res;
+            }
+
+            res = tmp;
+
+            res[*returnSize].bookingId = strToInt(fields[0]);
+            res[*returnSize].totalFare = strToInt(fields[4]);
+            res[*returnSize].totalSeatsBooked = strToInt(fields[3]);
+
+            rewind(flightFile);
+
+            char flightBuffer[MAX_LINE_LENGTH];
+            while (fgets(flightBuffer, sizeof(flightBuffer), flightFile) != NULL)
+            {
+                char **flightFields = splitCSVLine(flightBuffer, FLIGHT_DATA_LENGTH);
+
+                if (strToInt(fields[2]) == strToInt(flightFields[0]))
+                {
+                    copyStr(res[*returnSize].destination, flightFields[1]);
+                    copyStr(res[*returnSize].departure_date, flightFields[2]);
+                    copyStr(res[*returnSize].departure_time, flightFields[3]);
+
+                    for (int i = 0; i < FLIGHT_DATA_LENGTH; i++)
+                        free(flightFields[i]);
+                    free(flightFields);
+                    break;
+                }
+
+                for (int i = 0; i < FLIGHT_DATA_LENGTH; i++)
+                    free(flightFields[i]);
+                free(flightFields);
+                
+            }
+
+            (*returnSize)++;
+        }
+        for (int i = 0; i < BOOKING_DATA_LENGTH; i++)
+            free(fields[i]);
+        free(fields);
+    }
+
+    fclose(file);
+    fclose(flightFile);
+
+    return res;
+}
