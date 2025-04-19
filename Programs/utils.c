@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include "../Include/utils.h"
+#include "../Include/booking.h"
 
 int len(char *str)
 {
@@ -227,4 +228,24 @@ int compareByPrice(const void *a, const void *b)
 void sortAccPrice(Flight *flights, int count)
 {
     qsort(flights, count, sizeof(Flight), compareByPrice);
+}
+
+void printAllBookings(int userId)
+{
+    int returnSize;
+    AllBookingResponse *bookings = showAllBookings(userId, &returnSize);
+
+    if (returnSize == 0)
+    {
+        printf("No boooking found\n\n");
+        return;
+    }
+    printf("Following are your bookings\n\n");
+    for (int i = 0; i < returnSize; i++)
+    {
+        printf("Booking %d: \n", i + 1);
+        printf("<------------------------------>\n");
+        printf("Booking Id:- %d\nDestination:- %s\nDeparture Date:- %s\nDeparture Time:- %s\n Total Seats Booked:- %d\n Total Fare:- %d\n", bookings[i].bookingId, bookings[i].destination, bookings[i].departure_date, bookings[i].departure_time, bookings[i].totalSeatsBooked, bookings[i].totalFare);
+        printf("<------------------------------>\n");
+    }
 }

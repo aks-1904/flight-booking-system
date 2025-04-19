@@ -4,6 +4,7 @@
 #define BOOKING_ID_SIZE 9
 #define BOOKINGS_FILE "./data/bookings.csv"
 #define BOOKING_DATA_LENGTH 5
+#define TEMP_BOOKING_FILE "tmpbooking.csv"
 
 typedef struct
 {

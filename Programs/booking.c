@@ -166,7 +166,6 @@ AllBookingResponse *showAllBookings(int userId, int *returnSize)
                 for (int i = 0; i < FLIGHT_DATA_LENGTH; i++)
                     free(flightFields[i]);
                 free(flightFields);
-                
             }
 
             (*returnSize)++;
@@ -178,6 +177,105 @@ AllBookingResponse *showAllBookings(int userId, int *returnSize)
 
     fclose(file);
     fclose(flightFile);
+
+    return res;
+}
+
+BookingResponse cancelBooking(int bookingId)
+{
+    BookingResponse res;
+
+    FILE *bookingFile = fopen(BOOKINGS_FILE, "r");
+    FILE *flightFile = fopen(FLIGHT_FILE, "r");
+    FILE *tmpBookingFile = fopen(TEMP_BOOKING_FILE, "w");
+    FILE *tmpFlightFile = fopen(TEMP_FLIGHT_FILE, "w");
+
+    if (!bookingFile || !flightFile || !tmpBookingFile || !tmpFlightFile)
+    {
+        res.success = false;
+        copyStr(res.message, "Can't complete your request. Please try again later.");
+        return res;
+    }
+
+    char buffer[MAX_LINE_LENGTH];
+    bool bookingFound = false;
+    int seatsBooked = 0, flightId = 0;
+
+    while (fgets(buffer, sizeof(buffer), bookingFile) != NULL)
+    {
+        char **fields = splitCSVLine(buffer, BOOKING_DATA_LENGTH);
+
+        if (!bookingFound && strToInt(fields[0]) == bookingId)
+        {
+            bookingFound = true;
+
+            seatsBooked = strToInt(fields[3]);
+            flightId = strToInt(fields[2]);
+
+            res.booking.bookingId = bookingId;
+            res.booking.flightId = flightId;
+            res.booking.total_fare = strToInt(fields[4]);
+            res.booking.totalSeatsBooked = seatsBooked;
+            res.booking.userId = strToInt(fields[1]);
+        }
+        else
+        {
+            fputs(buffer, tmpBookingFile);
+        }
+
+        for (int i = 0; i < BOOKING_DATA_LENGTH; i++)
+            free(fields[i]);
+        free(fields);
+    }
+
+    fclose(bookingFile);
+    fclose(tmpBookingFile);
+
+    if (bookingFound)
+    {
+        rename(TEMP_BOOKING_FILE, BOOKINGS_FILE);
+
+        while (fgets(buffer, sizeof(buffer), flightFile) != NULL)
+        {
+            char **fields = splitCSVLine(buffer, FLIGHT_DATA_LENGTH);
+            int currentFlightId = strToInt(fields[0]);
+
+            if (currentFlightId == flightId)
+            {
+                int updatedSeats = strToInt(fields[5]) + seatsBooked;
+
+                fprintf(tmpFlightFile, "%s,%s,%s,%s,%s,%d\n",
+                        fields[0], fields[1], fields[2], fields[3], fields[4], updatedSeats);
+            }
+            else
+            {
+                fputs(buffer, tmpFlightFile);
+            }
+
+            for (int i = 0; i < FLIGHT_DATA_LENGTH; i++)
+                free(fields[i]);
+            free(fields);
+        }
+
+        fclose(flightFile);
+        fclose(tmpFlightFile);
+
+        rename(TEMP_FLIGHT_FILE, FLIGHT_FILE);
+
+        copyStr(res.message, "Booking canceled successfully.");
+        res.success = true;
+    }
+    else
+    {
+        fclose(flightFile);
+        fclose(tmpFlightFile);
+
+        remove(TEMP_BOOKING_FILE);
+        remove(TEMP_FLIGHT_FILE);
+
+        copyStr(res.message, "Booking ID not found. Please recheck and try again.");
+        res.success = false;
+    }
 
     return res;
 }

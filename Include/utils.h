@@ -22,5 +22,6 @@ void sortAccDeparture(Flight *flights, int count); // Sort flight according to d
 void printFlights(Flight *Flight, int count);      // Print the flights data
 int compareByPrice(const void *a, const void *b);  // Compare two flights by price
 void sortAccPrice(Flight *flights, int count);     // Sort flights according to price
+void printAllBookings(int userId);                 // Print all bookings of a user
 
 #endif

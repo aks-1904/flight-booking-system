@@ -351,25 +351,31 @@ void userMenu(User loggedInUser)
             break;
 
         case 2:
-            AllBookingResponse *bookings = showAllBookings(loggedInUser.userId, &returnSize);
-
-            if (returnSize == 0)
-            {
-                printf("No boooking found\n\n");
-                break;
-            }
-            printf("Following are your bookings\n\n");
-            for (int i = 0; i < returnSize; i++)
-            {
-                printf("Booking %d: \n", i + 1);
-                printf("<------------------------------>\n");
-                printf("Booking Id:- %d\nDestination:- %s\nDeparture Date:- %s\nDeparture Time:- %s\n Total Seats Booked:- %d\n Total Fare:- %d\n", bookings[i].bookingId, bookings[i].destination, bookings[i].departure_date, bookings[i].departure_time, bookings[i].totalSeatsBooked, bookings[i].totalFare);
-                printf("<------------------------------>\n");
-            }
-
+            printAllBookings(loggedInUser.userId);
             break;
 
         case 3:
+            printAllBookings(loggedInUser.userId);
+            int bookingId;
+
+            printf("Enter the booking id to cancel a booking: ");
+            scanf("%d", &bookingId);
+
+            res = cancelBooking(bookingId);
+
+            if (res.success)
+            {
+                printf("<---------- %s ---------->\n", res.message);
+                printf("Following are the details of booking that has been deleted: \n");
+                printf("Booking Id:- %d\nUser Id- %d\nFlight Id:- %d\n Total Seats Booked:- %d\n", res.booking.bookingId, res.booking.userId, res.booking.flightId, res.booking.totalSeatsBooked);
+            }
+            else
+            {
+                printf("<---------- %s ---------->", res.message);
+            }
+            break;
+
+        case 4:
             printf("Logging out...");
             return;
             break;

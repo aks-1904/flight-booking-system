@@ -4,6 +4,7 @@
 #define FLIGHT_FILE "./data/flights.csv"
 #define FLIGHT_DATA_LENGTH 7
 #define MAX_FLIGHTS 100
+#define TEMP_FLIGHT_FILE "tmpflight.csv"
 
 typedef struct
 {
