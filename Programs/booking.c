@@ -130,11 +130,10 @@ AllBookingResponse *showAllBookings(int userId, int *returnSize)
             {
                 for (int i = 0; i < BOOKING_DATA_LENGTH; i++)
                     free(fields[i]);
-
                 free(fields);
+
                 fclose(file);
                 fclose(flightFile);
-
                 return res;
             }
 
@@ -170,6 +169,7 @@ AllBookingResponse *showAllBookings(int userId, int *returnSize)
 
             (*returnSize)++;
         }
+
         for (int i = 0; i < BOOKING_DATA_LENGTH; i++)
             free(fields[i]);
         free(fields);
@@ -244,8 +244,8 @@ BookingResponse cancelBooking(int bookingId)
             {
                 int updatedSeats = strToInt(fields[5]) + seatsBooked;
 
-                fprintf(tmpFlightFile, "%s,%s,%s,%s,%s,%d\n",
-                        fields[0], fields[1], fields[2], fields[3], fields[4], updatedSeats);
+                fprintf(tmpFlightFile, "%s,%s,%s,%s,%s,%s,%d\n",
+                        fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], updatedSeats);
             }
             else
             {

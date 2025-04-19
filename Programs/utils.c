@@ -161,15 +161,15 @@ char **splitCSVLine(char *line, int length)
     char **arr = (char **)malloc(length * sizeof(char *));
     int idx = 0, i = 0;
 
-    while (line[i] != '\n' && line[i] != '\0')
+    while (line[i] != '\n' && line[i] != '\0' && idx < length)
     {
         int start = i, k = 0;
         while (line[i] != ',' && line[i] != '\n' && line[i] != '\0')
             i++;
 
-        int length = i - start;
+        int len = i - start;
 
-        arr[idx] = (char *)malloc((length + 1) * sizeof(char));
+        arr[idx] = (char *)malloc((len + 1) * sizeof(char));
         for (int j = start; j < i; j++)
             arr[idx][k++] = line[j];
 
@@ -180,8 +180,16 @@ char **splitCSVLine(char *line, int length)
             i++;
     }
 
+    while (idx < length)
+    {
+        arr[idx] = (char *)malloc(1 * sizeof(char));
+        arr[idx][0] = '\0';
+        idx++;
+    }
+
     return arr;
 }
+
 
 int compareFlights(const void *a, const void *b)
 {
@@ -237,15 +245,20 @@ void printAllBookings(int userId)
 
     if (returnSize == 0)
     {
-        printf("No boooking found\n\n");
+        printf("No booking found\n\n");
         return;
     }
+
     printf("Following are your bookings\n\n");
     for (int i = 0; i < returnSize; i++)
     {
         printf("Booking %d: \n", i + 1);
         printf("<------------------------------>\n");
-        printf("Booking Id:- %d\nDestination:- %s\nDeparture Date:- %s\nDeparture Time:- %s\n Total Seats Booked:- %d\n Total Fare:- %d\n", bookings[i].bookingId, bookings[i].destination, bookings[i].departure_date, bookings[i].departure_time, bookings[i].totalSeatsBooked, bookings[i].totalFare);
+        printf("Booking Id:- %d\nDestination:- %s\nDeparture Date:- %s\nDeparture Time:- %s\n Total Seats Booked:- %d\n Total Fare:- %d\n",
+               bookings[i].bookingId, bookings[i].destination, bookings[i].departure_date, bookings[i].departure_time,
+               bookings[i].totalSeatsBooked, bookings[i].totalFare);
         printf("<------------------------------>\n");
     }
+
+    free(bookings);
 }
