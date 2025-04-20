@@ -83,3 +83,66 @@ Flight *displayFlights(char *destination, int *returnSize)
     fclose(file);
     return flights;
 }
+
+bool cancelFlight(int flight_number)
+{
+    FILE *flightFile = fopen(FLIGHT_FILE, "r");
+    FILE *bookingsFile = fopen(BOOKINGS_FILE, "r");
+    FILE *tempFlightFile = fopen(TEMP_FLIGHT_FILE, "w");
+    FILE *tempBookingFile = fopen(TEMP_BOOKING_FILE, "w");
+
+    int found = false;
+
+    if (!flightFile || !bookingsFile || !tempBookingFile || !tempFlightFile)
+        return false;
+
+    char buffer[MAX_LINE_LENGTH];
+
+    while (fgets(buffer, sizeof(buffer), flightFile) != NULL)
+    {
+        char **fields = splitCSVLine(buffer, FLIGHT_DATA_LENGTH);
+
+        if (strToInt(fields[0]) == flight_number)
+        {
+            found = true;
+        }
+        else
+        {
+            fputs(buffer, tempFlightFile);
+        }
+
+        for (int i = 0; i < FLIGHT_DATA_LENGTH; i++)
+            free(fields[i]);
+        free(fields);
+    }
+
+    while (fgets(buffer, sizeof(buffer), bookingsFile) != NULL)
+    {
+        char **fields = splitCSVLine(buffer, BOOKING_DATA_LENGTH);
+
+        if (strToInt(fields[2]) != flight_number)
+            fputs(buffer, tempBookingFile);
+
+        for (int i = 0; i < BOOKING_DATA_LENGTH; i++)
+            free(fields[i]);
+        free(fields);
+    }
+
+    fclose(flightFile);
+    fclose(bookingsFile);
+    fclose(tempFlightFile);
+    fclose(tempBookingFile);
+
+    if (found)
+    {
+        rename(TEMP_FLIGHT_FILE, FLIGHT_FILE);
+        rename(TEMP_BOOKING_FILE, BOOKINGS_FILE);
+    }
+    else
+    {
+        remove(TEMP_FLIGHT_FILE);
+        remove(TEMP_BOOKING_FILE);
+    }
+
+    return found;
+}

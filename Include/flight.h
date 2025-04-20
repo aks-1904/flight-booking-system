@@ -26,5 +26,6 @@ typedef struct
 
 FlightResponse addFlight(Flight *flight);
 Flight *displayFlights(char *destiantion, int *returnSize);
+bool cancelFlight(int flight_number);
 
 #endif

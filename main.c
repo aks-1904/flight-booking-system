@@ -155,7 +155,6 @@ void adminMenu()
         switch (choice)
         {
         case 1:
-        {
             char flight_number[10], ticket_price[10], total_seats[10];
 
             printf("Enter the details of flight to continue:-\n");
@@ -233,7 +232,20 @@ void adminMenu()
                 printf("\n<---------- %s ---------->\n", res.message);
             }
             break;
-        }
+
+        case 2:
+            int flightID;
+            printf("Enter the flight number to remove it: ");
+            scanf("%d", &flightID);
+
+            bool success = cancelFlight(flightID);
+
+            if (success)
+                printf("Flight and its corresponding bookings has been deleted\n");
+            else
+                printf("Some error occured, can't complete your request (Check flight number or wait for some time): ");
+
+            break;
 
         case 4:
             printf("Logging Out...\n");
