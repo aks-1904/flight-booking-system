@@ -134,7 +134,8 @@ void adminMenu()
         printf("1. Add a flight\n");
         printf("2. Remove a flight\n");
         printf("3. Check a flight details\n");
-        printf("4. Logout\n");
+        printf("4. Generate Report\n");
+        printf("5. Logout\n");
 
         int choice;
         Flight flight;
@@ -247,7 +248,8 @@ void adminMenu()
 
             break;
 
-        case 4:
+            
+        case 5:
             printf("Logging Out...\n");
             return;
 
