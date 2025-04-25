@@ -146,3 +146,106 @@ bool cancelFlight(int flight_number)
 
     return found;
 }
+
+void printReport()
+{
+    FILE *flightFile = fopen(FLIGHT_FILE, "r");
+    FILE *bookingFile = fopen(BOOKINGS_FILE, "r");
+
+    if (!flightFile || !bookingFile)
+    {
+        printf("Some error occuered while generating report");
+        return;
+    }
+
+    char line[MAX_LINE_LENGTH];
+
+    fgets(line, sizeof(line), flightFile);
+    fgets(line, sizeof(line), bookingFile);
+
+    int totalBookings = 0;
+    int totalAvailableSeats = 0;
+    float totalRevenue = 0.0;
+
+    while (fgets(line, sizeof(line), flightFile))
+    {
+        char **fields = splitCSVLine(line, FLIGHT_DATA_LENGTH);
+        if (fields == NULL)
+            continue;
+        totalAvailableSeats += strToInt(fields[6]);
+
+        for (int i = 0; i < FLIGHT_DATA_LENGTH; i++)
+            free(fields[i]);
+        free(fields);
+    }
+
+    rewind(bookingFile);
+    fgets(line, sizeof(line), bookingFile);
+
+    while (fgets(line, sizeof(line), bookingFile))
+    {
+        char **fields = splitCSVLine(line, BOOKING_DATA_LENGTH);
+        if (fields == NULL)
+            continue;
+        totalBookings += strToInt(fields[3]);
+        totalRevenue += strToInt(fields[4]);
+
+        for (int i = 0; i < BOOKING_DATA_LENGTH; i++)
+            free(fields[i]);
+        free(fields);
+    }
+
+    fclose(flightFile);
+    fclose(bookingFile);
+
+    printf("===== Flight Booking Report =====\n");
+    printf("Total Bookings       : %d\n", totalBookings);
+    printf("Total Available Seats: %d\n", totalAvailableSeats);
+    printf("Total Revenue (INR)  : %.2f\n", totalRevenue);
+    printf("<================================>");
+}
+
+FlightResponse findFlight(int flight_number)
+{
+    FlightResponse res;
+    FILE *file = fopen(FLIGHT_FILE, "r");
+
+    if (!file)
+    {
+        copyStr(res.message, "Cannot complete you request, try again later");
+        res.success = false;
+
+        return res;
+    }
+
+    char buffer[MAX_LINE_LENGTH];
+    fgets(buffer, sizeof(buffer), file);
+
+    while (fgets(buffer, sizeof(buffer), file))
+    {
+        char **fields = splitCSVLine(buffer, FLIGHT_DATA_LENGTH);
+
+        if (strToInt(fields[0]) == flight_number)
+        {
+            res.success = true;
+            res.flight.flight_number = strToInt(fields[0]);
+            copyStr(res.flight.destination, fields[1]);
+            copyStr(res.flight.departure_date, fields[2]);
+            copyStr(res.flight.departure_time, fields[3]);
+            res.flight.ticket_price = strToInt(fields[4]);
+            res.flight.total_seats = strToInt(fields[5]);
+            res.flight.available_seats = strToInt(fields[6]);
+
+            return res;
+        }
+
+        for (int i = 0; i < FLIGHT_DATA_LENGTH; i++)
+            free(fields[i]);
+        free(fields);
+    }
+
+    res.success = false;
+    copyStr(res.message, "Flight Id didn't match to any existing flight");
+
+    return res;
+}

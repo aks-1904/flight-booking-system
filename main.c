@@ -248,7 +248,29 @@ void adminMenu()
 
             break;
 
-            
+        case 3:
+            printf("Enter the flight number to check details: ");
+            scanf("%d", &flightID);
+
+            FlightResponse res = findFlight(flightID);
+
+            if (res.success)
+            {
+                printf("\n<---------- Flight Details ---------->\n");
+                printf("Flight Number: %d\nDestination: %s\nDeparture Date: %s\nDeparture Time: %s\nTicket Price: %d\nTotal Seats: %d\n<--------------------------------->\n",
+                       res.flight.flight_number, res.flight.destination, res.flight.departure_date,
+                       res.flight.departure_time, res.flight.ticket_price, res.flight.total_seats);
+            }
+            else
+            {
+                printf("<---------- %s ---------->\n", res.message);
+            }
+            break;
+
+        case 4:
+            printReport();
+
+            break;
         case 5:
             printf("Logging Out...\n");
             return;
